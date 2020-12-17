@@ -88,7 +88,7 @@ public final class PDFViewController: UIViewController {
     private var currentPageIndex: Int = 0
     
     /// Bottom thumbnail controller
-    private var thumbnailCollectionController: PDFThumbnailCollectionViewController?
+//    private var thumbnailCollectionController: PDFThumbnailCollectionViewController?
     
     /// UIBarButtonItem used to override the default action button
     private var actionButton: UIBarButtonItem?
@@ -171,23 +171,12 @@ public final class PDFViewController: UIViewController {
         return isThumbnailsEnabled
     }
     
-    override public func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let controller = segue.destination as? PDFThumbnailCollectionViewController {
-            thumbnailCollectionController = controller
-            controller.document = document
-            controller.delegate = self
-            controller.currentPageIndex = currentPageIndex
-        }
-    }
-    
     public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         coordinator.animate(alongsideTransition: { context in
             let currentIndexPath = IndexPath(row: self.currentPageIndex, section: 0)
             self.collectionView.reloadItems(at: [currentIndexPath])
             self.collectionView.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: false)
-            }) { context in
-                self.thumbnailCollectionController?.currentPageIndex = self.currentPageIndex
-        }
+            }) { context in }
         
         super.viewWillTransition(to: size, with: coordinator)
     }
@@ -232,7 +221,6 @@ public final class PDFViewController: UIViewController {
 extension PDFViewController: PDFThumbnailControllerDelegate {
     func didSelectIndexPath(_ indexPath: IndexPath) {
         collectionView.scrollToItem(at: indexPath, at: .left, animated: false)
-        thumbnailCollectionController?.currentPageIndex = currentPageIndex
     }
 }
 
@@ -291,7 +279,6 @@ extension PDFViewController: UIScrollViewDelegate {
                 self.collectionView.reloadItems(at: [IndexPath(item: currentPageIndex, section: 0)])
             }
             currentPageIndex = updatedPageIndex
-            thumbnailCollectionController?.currentPageIndex = currentPageIndex
         }
     }
 }
